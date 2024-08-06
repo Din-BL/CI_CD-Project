@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - master
+    tags:
+      - 'v*.*.*'
 
 permissions:
   contents: write
@@ -27,6 +29,8 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+          server-id: github 
+          settings-path: ${{ github.workspace }} 
 
       - name: Install Maven 3.9.2
         run: |
@@ -36,36 +40,11 @@ jobs:
           sudo rm /usr/bin/mvn
           sudo ln -s /usr/local/apache-maven/bin/mvn /usr/bin/mvn
 
-      - name: Set Git user
-        run: |
-          git config --global user.name "GitHub Actions Bot"
-          git config --global user.email "actions@github.com"
-
-      - name: Create settings.xml
-        run: |
-          mkdir -p ~/.m2
-          echo "<settings xmlns=\"http://maven.apache.org/SETTINGS/1.0.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd\"><servers><server><id>github</id><username>${{ secrets.GITHUB_ACTOR }}</username><password>${{ secrets.GITHUB_TOKEN }}</password></server></servers></settings>" > ~/.m2/settings.xml
-
-      - name: Extract current version
-        id: get_version
-        run: |
-          current_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-          echo "##[set-output name=current_version;]$current_version"
-
-      - name: Increase version
-        id: increase_version
-        run: |
-          new_version=$(echo "${{ steps.get_version.outputs.current_version }}" | awk -F. '{$NF = $NF + 1;} 1' | sed 's/ /./g')
-          mvn versions:set -DnewVersion=$new_version
-          echo "##[set-output name=new_version;]$new_version"
-          git commit -am "Bump version to $new_version"
-          git push
-
       - name: Build with Maven
         run: mvn -B package --file pom.xml
 
       - name: Publish to GitHub Packages Apache Maven
-        run: mvn deploy -s ~/.m2/settings.xml
+        run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml
         env:
           GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
 
@@ -78,9 +57,33 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Extract version from git tags
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ secrets.DOCKER_USERNAME }}/my-app
+          flavor: latest=true
+          prefix: refs/tags/
+          sort: semver
+          tags: type=semver,pattern={{version}}
+
       - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/my-app:latest
+            ${{ secrets.DOCKER_USERNAME }}/my-app:${{ steps.meta.outputs.version }}
+
+      - name: Set git remote URL
+        run: git remote set-url origin https://${{ secrets.GIT_USERNAME }}:${{ secrets.GIT_TOKEN }}@github.com/${{ secrets.GIT_USERNAME }}/Java-Maven-App.git
+
+      - name: Tag and push new version
         run: |
-          version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-          docker buildx build --push --tag ${{ secrets.DOCKER_USERNAME }}/my-app:${version} .
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "${{ steps.meta.outputs.version }}" -m "Release ${{ steps.meta.outputs.version }}"
+          git push origin "${{ steps.meta.outputs.version }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
