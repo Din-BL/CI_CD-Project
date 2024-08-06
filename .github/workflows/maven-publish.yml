@@ -41,6 +41,11 @@ jobs:
           git config --global user.name "GitHub Actions Bot"
           git config --global user.email "actions@github.com"
 
+      - name: Create settings.xml
+        run: |
+          mkdir -p ~/.m2
+          echo "<settings xmlns=\"http://maven.apache.org/SETTINGS/1.0.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd\"><servers><server><id>github</id><username>${{ secrets.GITHUB_ACTOR }}</username><password>${{ secrets.GITHUB_TOKEN }}</password></server></servers></settings>" > ~/.m2/settings.xml
+
       - name: Extract current version
         id: get_version
         run: |
@@ -60,7 +65,7 @@ jobs:
         run: mvn -B package --file pom.xml
 
       - name: Publish to GitHub Packages Apache Maven
-        run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml
+        run: mvn deploy -s ~/.m2/settings.xml
         env:
           GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
 
