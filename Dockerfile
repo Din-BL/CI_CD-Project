@@ -1,4 +1,3 @@
-# Use the official Maven image with the specified version
 FROM maven:3.8.7-eclipse-temurin-17 AS build
 WORKDIR /app
 COPY pom.xml .
