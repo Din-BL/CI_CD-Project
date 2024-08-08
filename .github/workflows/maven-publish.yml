@@ -20,11 +20,15 @@ jobs:
         java-version: '17'
 
     - name: Update version
-      run: mvn versions:set -DnewVersion=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | sed 's/-SNAPSHOT//' | awk -F'.' '{printf "%d.%d.%d", $1, $2, $3+1}')
+      run: |
+        CURRENT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+        NEW_VERSION=$(echo $CURRENT_VERSION | sed 's/-SNAPSHOT//' | awk -F'.' '{printf "%d.%d.%d", $1, $2, $3+1}')
+        mvn versions:set -DnewVersion=$NEW_VERSION
+        echo "Updated version to $NEW_VERSION"
 
     - name: Get project version
       id: project_version
-      run: echo "::set-output name=VERSION::$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | sed 's/-SNAPSHOT//')"
+      run: echo "::set-output name=VERSION::$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)"
 
     - name: Build with Maven
       run: mvn clean package
