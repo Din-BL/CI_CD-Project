@@ -62,4 +62,4 @@ jobs:
         --build-arg JAR_FILE=target/${{ steps.jar_name.outputs.JAR_NAME }} \
         --tag dinbl/java_app:${{ steps.project_version.outputs.VERSION }} \
         --push .
-ה
+
