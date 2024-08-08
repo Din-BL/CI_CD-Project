@@ -20,7 +20,7 @@ jobs:
         java-version: '17'
 
     - name: Update version
-      run: mvn org.codehaus.mojo:versions-maven-plugin:2.8.1:set -DnewVersion=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | sed 's/-SNAPSHOT//' | awk -F'.' '{printf "%d.%d.%d\n", $1, $2, $3+1}')
+      run: mvn versions:set -DnewVersion=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | sed 's/-SNAPSHOT//' | awk -F'.' '{printf "%d.%d.%d", $1, $2, $3+1}')
 
     - name: Get project version
       id: project_version
