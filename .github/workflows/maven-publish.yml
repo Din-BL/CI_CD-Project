@@ -20,7 +20,7 @@ jobs:
         java-version: '17'
 
     - name: Update version
-      run: mvn versions:set -DnewVersion=`mvn help:evaluate -Dexpression=project.version -q -DforceStdout | awk -F'-' '{print $1"."$2+1".0-SNAPSHOT"}'`
+      run: mvn versions:set -DnewVersion=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | awk -F'-' '{print $1"."$2+1".0-SNAPSHOT"}')
 
     - name: Get project version
       id: project_version
