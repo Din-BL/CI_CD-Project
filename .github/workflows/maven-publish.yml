@@ -19,13 +19,8 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Ensure versions plugin is available
-      run: mvn org.codehaus.mojo:versions-maven-plugin:2.8.1:display-dependency-updates
-
     - name: Update version
-      run: mvn build-helper:parse-version versions:set \
-            -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.nextIncrementalVersion} \
-            versions:commit
+      run: mvn org.codehaus.mojo:versions-maven-plugin:2.8.1:set -DnewVersion=`mvn help:evaluate -Dexpression=project.version -q -DforceStdout | awk -F'-' '{print $1"."$2+1".0-SNAPSHOT"}'`
 
     - name: Get project version
       id: project_version
@@ -46,4 +41,3 @@ jobs:
     - name: Build and push Docker image
       run: |
         docker buildx build --platform linux/amd64 --tag dinbl/java_app:${{ steps.project_version.outputs.VERSION }} --push .
-
