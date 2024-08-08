@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+kkkkname: CI/CD Pipeline
 
 on:
   push:
@@ -33,6 +33,5 @@ jobs:
 
     - name: Build and push Docker image
       run: |
-        docker buildx build --tag dinbl/java_app .
-        docker push dinbl/java_app
+        docker buildx build --platform linux/amd64 --tag dinbl/java_app:latest --push .
 
