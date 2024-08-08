@@ -33,6 +33,6 @@ jobs:
 
     - name: Build and push Docker image
       run: |
-        docker build -t java_app .
-        docker push java_app
+        docker buildx build --tag dinbl/java_app .
+        docker push dinbl/java_app
 
