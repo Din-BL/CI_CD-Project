@@ -20,7 +20,9 @@ jobs:
         java-version: '17'
 
     - name: Update version
-      run: mvn org.codehaus.mojo:versions-maven-plugin:2.8.1:set -DnewVersion=`mvn help:evaluate -Dexpression=project.version -q -DforceStdout | awk -F'-' '{print $1"."$2+1".0-SNAPSHOT"}'`
+      run: mvn build-helper:parse-version versions:set \
+            -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.incrementalVersion} \
+            versions:commit
 
     - name: Get project version
       id: project_version
@@ -28,6 +30,10 @@ jobs:
 
     - name: Build with Maven
       run: mvn clean package
+
+    - name: Get JAR file name
+      id: jar_name
+      run: echo "::set-output name=JAR_NAME::$(ls target | grep '.jar$')"
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v1
@@ -40,4 +46,7 @@ jobs:
 
     - name: Build and push Docker image
       run: |
-        docker buildx build --platform linux/amd64 --tag dinbl/java_app:${{ steps.project_version.outputs.VERSION }} --push .
+        docker buildx build --platform linux/amd64 \
+        --build-arg JAR_FILE=target/${{ steps.jar_name.outputs.JAR_NAME }} \
+        --tag dinbl/java_app:${{ steps.project_version.outputs.VERSION }} \
+        --push .
