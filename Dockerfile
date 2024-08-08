@@ -5,7 +5,6 @@ COPY pom.xml .
 COPY src ./src
 RUN mvn clean package
 
-# Use the official OpenJDK image to run the application
 FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
 ARG JAR_FILE=target/*.jar
