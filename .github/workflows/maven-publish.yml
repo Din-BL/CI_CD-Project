@@ -66,6 +66,11 @@ jobs:
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
+    - name: Run Snyk to check Dockerfile for vulnerabilities
+      run: snyk test --dockerfile=Dockerfile --severity-threshold=high
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
     - name: Get JAR file name
       id: jar_name
       run: echo "::set-output name=JAR_NAME::$(ls target | grep '.jar$')"
