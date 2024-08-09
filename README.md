@@ -1,68 +1,49 @@
-# Java Maven Application
+# Java Maven App - CI/CD Project
 
-This project is a Java Maven application that uses a multi-stage Docker build process and a GitHub Actions workflow for CI/CD. The application is built using Maven, packaged into a Docker image, and pushed to Docker Hub.
+This project is a Java application managed using Maven, with a fully integrated CI/CD pipeline using GitHub Actions. The project demonstrates building, testing, packaging, and deploying a Java application.
 
 ## Table of Contents
 
+- [Introduction](#introduction)
+- [Features](#features)
+- [Getting Started](#getting-started)
 - [Prerequisites](#prerequisites)
-- [Setup](#setup)
-- [Dockerfile](#dockerfile)
-- [GitHub Actions Workflow](#github-actions-workflow)
-- [Running the Application](#running-the-application)
+- [Installation](#installation)
+- [Running Tests](#running-tests)
+- [CI/CD Pipeline](#cicd-pipeline)
+- [Usage](#usage)
 - [Contributing](#contributing)
 - [License](#license)
 
-## Prerequisites
+## Introduction
 
-- Docker
-- Docker Hub account
-- GitHub account
+This project is designed to showcase a Java Maven application with a CI/CD pipeline. The application is built using Maven, and the CI/CD pipeline is configured with GitHub Actions to automate the building, testing, and deployment processes.
 
-## Setup
+## Features
 
-### Docker Hub Credentials
+- Java application built with Maven
+- Automated CI/CD pipeline using GitHub Actions
+- Automated versioning with Maven Versions Plugin
+- Docker integration for containerizing the application
+- Deployment to Docker Hub
 
-1. Create a Docker Hub account if you don't have one.
-2. Generate an access token if you are using two-factor authentication.
+## Getting Started
 
-### GitHub Repository Secrets
+Follow these instructions to get a copy of the project up and running on your local machine for development and testing purposes.
 
-Add the following secrets to your GitHub repository:
+### Prerequisites
 
-1. **DOCKER_USERNAME**: Your Docker Hub username.
-2. **DOCKER_PASSWORD**: Your Docker Hub password or access token.
+Before you begin, ensure you have met the following requirements:
 
-To add secrets:
+- Java JDK 17 installed
+- Maven 3.8.7 or higher installed
+- Docker installed (if you plan to use Docker)
+- Git installed
 
-1. Go to your GitHub repository.
-2. Navigate to `Settings > Secrets and variables > Actions`.
-3. Click `New repository secret` and add the secrets.
+### Installation
 
-## Dockerfile
+1. Clone the repository:
 
-The Dockerfile uses a multi-stage build process to create a thinner runtime image. It ensures that Maven 3.9.2 and JDK 17 are used during the build stage.
-
-```dockerfile
-# Stage 1: Build the application
-FROM openjdk:17-jdk-slim AS build
-WORKDIR /app
-
-# Install Maven 3.9.2
-RUN apt-get update && \
-    apt-get install -y wget && \
-    wget https://archive.apache.org/dist/maven/maven-3/3.9.2/binaries/apache-maven-3.9.2-bin.tar.gz && \
-    tar -xzf apache-maven-3.9.2-bin.tar.gz && \
-    mv apache-maven-3.9.2 /usr/local/apache-maven && \
-    ln -s /usr/local/apache-maven/bin/mvn /usr/bin/mvn
-
-COPY pom.xml .
-COPY src ./src
-RUN mvn clean package -DskipTests
-
-# Stage 2: Create the runtime image
-FROM openjdk:17-jdk-slim
-WORKDIR /app
-COPY --from=build /app/target/*.jar /app/my-app.jar
-EXPOSE 8080
-CMD ["java", "-jar", "my-app.jar"]
-```
+   ```bash
+   git clone https://github.com/Din-BL/Java-Maven-App.git
+   cd Java-Maven-App
