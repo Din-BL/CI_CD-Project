@@ -5,16 +5,6 @@ on:
     branches:
       - master
 
-jobs:
-  security:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@master
-      - name: Run Snyk to check for vulnerabilities
-        uses: snyk/actions/node@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-
   build:
     runs-on: ubuntu-latest
 
@@ -66,6 +56,15 @@ jobs:
 
     - name: Build with Maven
       run: mvn clean package
+
+    
+    # Snyk vulnerability scan for a Java project
+    - name: Run Snyk to check for vulnerabilities
+      uses: snyk/actions@master
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      with:
+        args: test --file=pom.xml --severity-threshold=high
 
     - name: Get JAR file name
       id: jar_name
