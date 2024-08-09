@@ -58,16 +58,13 @@ jobs:
     - name: Build with Maven
       run: mvn clean package
 
-    # Add OWASP Dependency-Check here
-    - name: Run OWASP Dependency-Check
-      uses: dependency-check/scan-action@v1.5.0
+    - name: Run Snyk to check for vulnerabilities
+      uses: snyk/actions/setup@v2
       with:
-        project: 'CI_CD-Project'
-        format: 'ALL'
-        fail_on_severity: 'CRITICAL'
-        scan: './'
-        output_directory: 'dependency-check-report'
-
+        command: monitor
+        projectName: 'CI_CD-Project'
+        severity-threshold: 'critical'
+  
     - name: Get JAR file name
       id: jar_name
       run: echo "::set-output name=JAR_NAME::$(ls target | grep '.jar$')"
