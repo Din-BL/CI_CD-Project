@@ -57,8 +57,6 @@ on:
     - name: Build with Maven
       run: mvn clean package
 
-    
-    # Snyk vulnerability scan for a Java project
     - name: Run Snyk to check for vulnerabilities
       uses: snyk/actions@master
       env:
