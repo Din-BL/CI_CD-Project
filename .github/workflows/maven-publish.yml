@@ -15,6 +15,11 @@ jobs:
       with:
         token: ${{ secrets.GH_TOKEN }}
 
+    - name: Scan for Secrets
+      uses: zricethezav/gitleaks-action@v1.3.0
+      with:
+        config: gitleaks.toml
+
     - name: Set up JDK 17
       uses: actions/setup-java@v2
       with:
