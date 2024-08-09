@@ -1,0 +1,26 @@
+title = "gitleaks config"
+
+[[rules]]
+description = "Generic API Key"
+regex = '''[A-Za-z0-9_]{20,50}'''
+tags = ["apikey"]
+
+[[rules]]
+description = "AWS Access Key"
+regex = '''AKIA[0-9A-Z]{16}'''
+tags = ["aws", "key"]
+
+[[rules]]
+description = "AWS Secret Key"
+regex = '''(?i)aws(.{0,20})?(?-i)['\"][0-9a-zA-Z/+]{40}['\"]'''
+tags = ["aws", "key", "secret"]
+
+[[rules]]
+description = "GitHub Token"
+regex = '''ghp_[A-Za-z0-9_]{36}'''
+tags = ["github", "key"]
+
+[[rules]]
+description = "Generic Secret"
+regex = '''[A-Za-z0-9]{32}'''
+tags = ["secret"]
