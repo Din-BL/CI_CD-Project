@@ -47,7 +47,12 @@ jobs:
       id: project_version
       run: |
         NEW_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+        echo "Project version: $NEW_VERSION"
         echo "::set-output name=VERSION::$NEW_VERSION"
+
+    - name: Get JAR file name
+      id: jar_name
+      run: echo "::set-output name=JAR_NAME::$(ls target | grep '.jar$')"
 
     - name: Build with Maven
       run: mvn clean package
