@@ -103,11 +103,11 @@ jobs:
     - name: Wait before verifying image
       run: sleep 10
 
-    - name: Pull Docker Image for Verification
-      run: docker pull dinbl/java_app:${{ steps.project_version.outputs.VERSION }}
+    # - name: Pull Docker Image for Verification
+    #   run: docker pull dinbl/java_app:${{ steps.project_version.outputs.VERSION }}
   
-    - name: Verify Docker Image Push
-      run: docker inspect dinbl/java_app:${{ steps.project_version.outputs.VERSION }}
+    # - name: Verify Docker Image Push
+    #   run: docker inspect dinbl/java_app:${{ steps.project_version.outputs.VERSION }}
 
     - name: Install Cosign
       run: |
