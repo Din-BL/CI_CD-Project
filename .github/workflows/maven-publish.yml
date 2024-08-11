@@ -123,5 +123,5 @@ jobs:
         COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
       run: |
         IMAGE_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' dinbl/java_app:${{ steps.project_version.outputs.VERSION }})
-        cosign verify --key cosign.key --yes $IMAGE_DIGEST
+        cosign verify --key cosign.key $IMAGE_DIGEST
 
