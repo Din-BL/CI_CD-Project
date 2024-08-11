@@ -100,15 +100,12 @@ jobs:
         --tag dinbl/java_app:${{ steps.project_version.outputs.VERSION }} \
         --push .
 
-    - name: Wait before verifying image
-      run: sleep 10
+    # - name: Wait before verifying image
+    #   run: sleep 10
 
-    # - name: Pull Docker Image for Verification
-    #   run: docker pull dinbl/java_app:${{ steps.project_version.outputs.VERSION }}
+    - name: Pull Docker Image for Verification
+      run: docker pull dinbl/java_app:${{ steps.project_version.outputs.VERSION }}
   
-    # - name: Verify Docker Image Push
-    #   run: docker inspect dinbl/java_app:${{ steps.project_version.outputs.VERSION }}
-
     - name: Install Cosign
       run: |
         curl -LO https://github.com/sigstore/cosign/releases/download/v2.0.0/cosign-linux-amd64
