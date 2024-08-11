@@ -32,7 +32,7 @@ jobs:
       run: |
         mvn clean verify sonar:sonar \
           -Dsonar.projectKey=CI-CD-GitHub \
-          -Dsonar.host.url=http://3.82.162.13:9000 \
+          -Dsonar.host.url=http://54.89.87.18:9000 \
           -Dsonar.login=$SONAR_TOKEN
           
     - name: Display current version
