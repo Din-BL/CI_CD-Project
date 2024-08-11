@@ -110,8 +110,5 @@ jobs:
       env:
         COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
       run: |
+        echo "${{ secrets.COSIGN_PRIVATE_KEY }}" > cosign.key
         cosign sign --key cosign.key dinbl/java_app:${{ steps.project_version.outputs.VERSION }}
-
-    - name: Verify Docker Image Signature (optional)
-      run: |
-        cosign verify dinbl/java_app:${{ steps.project_version.outputs.VERSION }}
