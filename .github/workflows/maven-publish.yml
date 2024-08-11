@@ -100,6 +100,9 @@ jobs:
         --tag dinbl/java_app:${{ steps.project_version.outputs.VERSION }} \
         --push .
 
+    - name: Wait before verifying image
+      run: sleep 10
+      
     - name: Verify Docker Image Push
       run: docker inspect dinbl/java_app:${{ steps.project_version.outputs.VERSION }}
 
