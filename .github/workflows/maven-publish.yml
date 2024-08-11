@@ -26,17 +26,16 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
         
-    - name: SonarQube Scan
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      run: |
-        mvn clean verify sonar:sonar \
-          -Dsonar.projectKey=CI-CD-GitHub \
-          -Dsonar.host.url=http://54.89.87.18:9000 \
-          -Dsonar.login=$SONAR_TOKEN
-          
-    - name: Display current version
-      run: mvn help:evaluate -Dexpression=project.version -q -DforceStdout
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v2
+      with:
+        languages: java
+
+    - name: Build with Maven
+      run: mvn clean package
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v2
 
     - name: Update version
       run: |
@@ -63,9 +62,6 @@ jobs:
         NEW_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
         echo "Setting output VERSION to $NEW_VERSION"
         echo "::set-output name=VERSION::$NEW_VERSION"
-
-    - name: Build with Maven
-      run: mvn clean package
     
     - name: Install Snyk
       run: npm install -g snyk
@@ -100,9 +96,6 @@ jobs:
         --tag dinbl/java_app:${{ steps.project_version.outputs.VERSION }} \
         --push .
 
-    # - name: Wait before verifying image
-    #   run: sleep 10
-
     - name: Pull Docker Image for Verification
       run: docker pull dinbl/java_app:${{ steps.project_version.outputs.VERSION }}
   
@@ -119,4 +112,3 @@ jobs:
         echo "${{ secrets.COSIGN_PRIVATE_KEY }}" > cosign.key
         IMAGE_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' dinbl/java_app:${{ steps.project_version.outputs.VERSION }})
         cosign sign --key cosign.key --yes $IMAGE_DIGEST
-
