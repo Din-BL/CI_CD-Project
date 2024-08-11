@@ -100,6 +100,9 @@ jobs:
         --tag dinbl/java_app:${{ steps.project_version.outputs.VERSION }} \
         --push .
 
+    - name: Verify Docker Image Push
+      run: docker inspect dinbl/java_app:${{ steps.project_version.outputs.VERSION }}
+
     - name: Install Cosign
       run: |
         curl -LO https://github.com/sigstore/cosign/releases/download/v2.0.0/cosign-linux-amd64
@@ -113,3 +116,4 @@ jobs:
         echo "${{ secrets.COSIGN_PRIVATE_KEY }}" > cosign.key
         IMAGE_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' dinbl/java_app:${{ steps.project_version.outputs.VERSION }})
         cosign sign --key cosign.key --yes $IMAGE_DIGEST
+
