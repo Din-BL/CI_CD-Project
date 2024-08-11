@@ -38,19 +38,15 @@ jobs:
     - name: Update version
       run: |
         CURRENT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-        echo "Current version: $CURRENT_VERSION"
         NEW_VERSION=$(echo $CURRENT_VERSION | sed 's/-SNAPSHOT//' | awk -F'.' '{printf "%d.%d.%d", $1, $2, $3+1}')
-        echo "New version: $NEW_VERSION"
         mvn versions:set -DnewVersion=$NEW_VERSION
         mvn versions:commit
-        echo "Updated version in POM:"
         cat pom.xml | grep "<version>"
 
     - name: Get project version
       id: project_version
       run: |
         NEW_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-        echo "Setting output VERSION to $NEW_VERSION"
         echo "::set-output name=VERSION::$NEW_VERSION"
 
     - name: Build with Maven
