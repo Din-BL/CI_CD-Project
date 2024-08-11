@@ -43,7 +43,6 @@ jobs:
         echo "New version: $NEW_VERSION"
         mvn versions:set -DnewVersion=$NEW_VERSION
         mvn versions:commit
-        echo "Updated version in POM:"
         cat pom.xml | grep "<version>"
 
     # - name: Commit updated POM
