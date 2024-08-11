@@ -107,8 +107,7 @@ jobs:
         sudo mv cosign-linux-amd64 /usr/local/bin/cosign
 
     - name: Sign Docker Image
-      env:
-        COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
       run: |
         echo "${{ secrets.COSIGN_PRIVATE_KEY }}" > cosign.key
         cosign sign --key cosign.key dinbl/java_app:${{ steps.project_version.outputs.VERSION }}
+
