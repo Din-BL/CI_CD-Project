@@ -34,25 +34,31 @@ jobs:
           -Dsonar.projectKey=CI-CD-GitHub \
           -Dsonar.host.url=http://54.89.87.18:9000 \
           -Dsonar.login=$SONAR_TOKEN
-          
+
     - name: Update version
       run: |
         CURRENT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+        echo "Current version: $CURRENT_VERSION"
         NEW_VERSION=$(echo $CURRENT_VERSION | sed 's/-SNAPSHOT//' | awk -F'.' '{printf "%d.%d.%d", $1, $2, $3+1}')
+        echo "New version: $NEW_VERSION"
         mvn versions:set -DnewVersion=$NEW_VERSION
         mvn versions:commit
+        echo "Updated version in POM:"
         cat pom.xml | grep "<version>"
+
+    # - name: Commit updated POM
+    #   run: |
+    #     git config --global user.name "github-actions[bot]"
+    #     git config --global user.email "github-actions[bot]@users.noreply.github.com"
+    #     git add pom.xml
+    #     git commit -m "Update project version to $NEW_VERSION [skip ci]"
+    #     git push
 
     - name: Get project version
       id: project_version
       run: |
         NEW_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-        echo "Project version: $NEW_VERSION"
         echo "::set-output name=VERSION::$NEW_VERSION"
-
-    - name: Get JAR file name
-      id: jar_name
-      run: echo "::set-output name=JAR_NAME::$(ls target | grep '.jar$')"
 
     - name: Build with Maven
       run: mvn clean package
@@ -69,6 +75,10 @@ jobs:
       run: snyk test --dockerfile=Dockerfile --severity-threshold=high
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+    - name: Get JAR file name
+      id: jar_name
+      run: echo "::set-output name=JAR_NAME::$(ls target | grep '.jar$')"
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v1
