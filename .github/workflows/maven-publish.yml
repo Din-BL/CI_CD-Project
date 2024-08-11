@@ -32,8 +32,11 @@ jobs:
       run: |
         mvn clean verify sonar:sonar \
           -Dsonar.projectKey=CI-CD-GitHub \
-          -Dsonar.host.url=http://54.89.87.18:9000 \
+          -Dsonar.host.url=http://3.82.162.13:9000 \
           -Dsonar.login=$SONAR_TOKEN
+          
+    - name: Display current version
+      run: mvn help:evaluate -Dexpression=project.version -q -DforceStdout
 
     - name: Update version
       run: |
@@ -43,6 +46,7 @@ jobs:
         echo "New version: $NEW_VERSION"
         mvn versions:set -DnewVersion=$NEW_VERSION
         mvn versions:commit
+        echo "Updated version in POM:"
         cat pom.xml | grep "<version>"
 
     - name: Commit updated POM
@@ -57,6 +61,7 @@ jobs:
       id: project_version
       run: |
         NEW_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+        echo "Setting output VERSION to $NEW_VERSION"
         echo "::set-output name=VERSION::$NEW_VERSION"
 
     - name: Build with Maven
@@ -94,3 +99,19 @@ jobs:
         --build-arg JAR_FILE=target/${{ steps.jar_name.outputs.JAR_NAME }} \
         --tag dinbl/java_app:${{ steps.project_version.outputs.VERSION }} \
         --push .
+
+    - name: Install Cosign
+      run: |
+        curl -LO https://github.com/sigstore/cosign/releases/download/v2.0.0/cosign-linux-amd64
+        chmod +x cosign-linux-amd64
+        sudo mv cosign-linux-amd64 /usr/local/bin/cosign
+
+    - name: Sign Docker Image
+      env:
+        COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
+      run: |
+        cosign sign --key cosign.key dinbl/java_app:${{ steps.project_version.outputs.VERSION }}
+
+    - name: Verify Docker Image Signature (optional)
+      run: |
+        cosign verify dinbl/java_app:${{ steps.project_version.outputs.VERSION }}
