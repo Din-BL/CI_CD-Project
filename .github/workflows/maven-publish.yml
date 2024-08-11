@@ -111,5 +111,5 @@ jobs:
         COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
       run: |
         echo "${{ secrets.COSIGN_PRIVATE_KEY }}" > cosign.key
-        cosign sign --key cosign.key dinbl/java_app:${{ steps.project_version.outputs.VERSION }}
-
+        IMAGE_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' dinbl/java_app:${{ steps.project_version.outputs.VERSION }})
+        cosign sign --key cosign.key --yes $IMAGE_DIGEST
