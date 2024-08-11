@@ -117,3 +117,10 @@ jobs:
         echo "${{ secrets.COSIGN_PRIVATE_KEY }}" > cosign.key
         IMAGE_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' dinbl/java_app:${{ steps.project_version.outputs.VERSION }})
         cosign sign --key cosign.key --yes $IMAGE_DIGEST
+
+    - name: Verify Docker Image Signature
+      env:
+        COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
+      run: |
+        echo "${{ secrets.COSIGN_PUBLIC_KEY }}" > cosign.pub
+        cosign verify --key cosign.pub $IMAGE_DIGEST
