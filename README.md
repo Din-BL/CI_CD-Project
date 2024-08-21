@@ -2,19 +2,6 @@
 
 This project is a Java application managed using Maven, with a fully integrated CI/CD pipeline using GitHub Actions. The project demonstrates building, testing, packaging, and deploying a Java application.
 
-## Table of Contents
-
-- [Introduction](#introduction)
-- [Features](#features)
-- [Getting Started](#getting-started)
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-- [Running Tests](#running-tests)
-- [CI/CD Pipeline](#cicd-pipeline)
-- [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
-
 ## Introduction
 
 This project is designed to showcase a Java Maven application with a CI/CD pipeline. The application is built using Maven, and the CI/CD pipeline is configured with GitHub Actions to automate the building, testing, and deployment processes.
